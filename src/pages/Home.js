@@ -3,7 +3,7 @@ import { H1, H2, Link } from "../components/Common/Common";
 import { CartContext } from "../Contexts/CartContext";
 
 const Home = () => {
-  const { cart, setCart, resetCart, cartTotalItems } = useContext(CartContext);
+  const { cart, resetCart, cartTotalItems } = useContext(CartContext);
 
   console.log("from home", cart);
 

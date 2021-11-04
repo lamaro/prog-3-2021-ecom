@@ -1,27 +1,64 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { default as ProductComp } from "../components/Product/Product";
 import { CartContext } from "../Contexts/CartContext";
+import { getFirestore } from "../services/firebase";
 
 const Product = () => {
   const { prodId } = useParams();
 
   const { addToCart } = useContext(CartContext);
 
-  const [product, setProduct] = useState({ 
-    id: prodId,
-    category: "8EHrGRS3Nhor3RF6XFjn",
-    description: "This is the best mario toy ever, ever.",
-    image: "https://firebasestorage.googleapis.com/v0/b/prog-2021.appspot.com/o/placeholder.jpg?alt=media&token=ba7be4c3-b7f1-4fe3-8799-9d281116e5d6",
-    name: "Mario Toy",
-    price: 200
-    });
+  const [product, setProduct] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+
+  const addToCartWithFeedback = (product) => {
+    addToCart(product);
+    setShowNotification(product.name);
+    setTimeout(() => {
+        setShowNotification(false);
+    }, 5000);
+    
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const db = getFirestore();
+      try {
+        const itemsCollection = db.collection(`products`);
+        const itemSnapshot = await itemsCollection.doc(prodId).get();
+        if (!itemSnapshot.exists) {
+          console.log("No matching documents.");
+          return;
+        }
+
+        setProduct({ id: itemSnapshot.id, ...itemSnapshot.data() });
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [prodId]);
 
   //Aca vamos a consultarle a firebase los datos de este producto usando el prodId
 
   return (
     <div>
-      <ProductComp prodId={prodId} product={product} addToCart={addToCart} />
+      {showNotification && <p>{`PRODUCT ADDED TO CART: ${showNotification}`}</p>}
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <ProductComp
+          prodId={prodId}
+          product={product}
+          addToCart={addToCartWithFeedback}
+        />
+      )}
     </div>
   );
 };

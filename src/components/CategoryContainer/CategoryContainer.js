@@ -4,7 +4,7 @@ import { Container } from './Styled'
 import ProductCard from '../ProductCard/ProductCard'
 import { getFirestore } from '../../services/firebase'
 
-const CategoryContainer = ({ catid }) => {
+const CategoryContainer = ({ catId }) => {
     //Aca vamos a incluir nuestra logica de fetch a firebase
     const [products, setProducts] = useState([])
     const [loading, setLoading] = useState(true)
@@ -14,7 +14,11 @@ const CategoryContainer = ({ catid }) => {
             try {
                 const db = getFirestore()
                 const productsCollection = db.collection(`products`)
-                const productsSnapshot = await productsCollection.get()
+                const productsSnapshot = catId ?
+                    await productsCollection.where('category', '==', catId).limit(20).get()
+                    :
+                    await productsCollection.orderBy('price', 'desc').limit(20).get();
+
                 const products = productsSnapshot.docs.map(doc => {
                     return { id: doc.id, ...doc.data() }
                 })
@@ -25,7 +29,7 @@ const CategoryContainer = ({ catid }) => {
             }
         }
         getProducts()
-    }, [catid])
+    }, [catId])
 
     return (
         <Container>

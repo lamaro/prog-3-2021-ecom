@@ -3,6 +3,7 @@ import "./App.css";
 import Home from "./pages/Home";
 import Category from "./pages/Category";
 import Product from "./pages/Product";
+import Checkout from "./pages/Checkout";
 import Navbar from "./components/NavBar/Navbar";
 import { CartProvider } from "./Contexts/CartContext";
 
@@ -21,6 +22,9 @@ function App() {
             </Route>
             <Route exact path={`/product/:prodId`}>
               <Product />
+            </Route>
+            <Route exact path={`/checkout`}>
+              <Checkout />
             </Route>
             <Route exact path={`/`}>
               <Home />

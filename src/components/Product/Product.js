@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Container } from './Styled'
-import placeholder from '../../assets/dummy/placeholder.jpg'
 import { Grid, Col } from '../Grid/index'
 
 const Product = ({ prodId, product, addToCart }) => {
